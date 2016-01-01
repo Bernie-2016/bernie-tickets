@@ -30,7 +30,7 @@ module.exports = React.createClass
     if textError || urlError
       @setState(textError: textError, urlError: urlError)
     else
-      @firebaseRefs['forms'].child(@state.url).set(title: @state.text, fields: [], user_id: "#{FirebaseUtils.currentUser().uid}")
+      @firebaseRefs['forms'].child(@state.url.toLowerCase()).set(title: @state.text, fields: [], user_id: "#{FirebaseUtils.currentUser().uid}")
       @setState(text: '', url: '', textError: false, urlError: false)
 
   componentWillMount: ->
