@@ -39,7 +39,7 @@ module.exports = React.createClass
     @bindAsArray(ref, 'forms')
 
   formPage: (slug) ->
-    @history.pushState(null, "/admin/forms/#{slug}")
+    @history.pushState(null, "/admin/forms/#{slug.toLowerCase()}")
 
   render: ->
     forms = @state.forms.filter( (form) -> form.user_id == FirebaseUtils.currentUser().uid)

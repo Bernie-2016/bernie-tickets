@@ -50,7 +50,7 @@ module.exports = React.createClass
 
   componentWillMount: ->
     if @props.params.slug
-      ref = FirebaseUtils.fb("forms/#{@props.params.slug}")
+      ref = FirebaseUtils.fb("forms/#{@props.params.slug.toLowerCase()}")
       @bindAsArray(ref.child('fields'), 'fields')
 
   makeId: (string) ->
@@ -79,7 +79,7 @@ module.exports = React.createClass
         else
           formData[field.title] = $("##{@makeId(field.title)}").val()
 
-      FirebaseUtils.fb("forms/#{@props.params.slug}/responses").push(formData)
+      FirebaseUtils.fb("forms/#{@props.params.slug.toLowerCase()}/responses").push(formData)
 
     # Stringify basic fields.
     allFields = [

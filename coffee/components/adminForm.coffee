@@ -47,7 +47,7 @@ module.exports = React.createClass
     window.open(encodeURI(csvContent))
 
   componentWillMount: ->
-    ref = FirebaseUtils.fb("forms/#{@props.params.slug}")
+    ref = FirebaseUtils.fb("forms/#{@props.params.slug.toLowerCase()}")
     @bindAsObject(ref, 'form')
     @bindAsArray(ref.child('fields'), 'fields')
     @bindAsArray(ref.child('responses'), 'responses')
