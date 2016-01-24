@@ -20,6 +20,7 @@ module.exports = React.createClass
       suggestion: {}
       showSuggestion: false
       fields: []
+      form: false
     }
 
   viewForm: ->
@@ -51,6 +52,7 @@ module.exports = React.createClass
   componentWillMount: ->
     if @props.params.slug
       ref = FirebaseUtils.fb("forms/#{@props.params.slug.toLowerCase()}")
+      @bindAsObject(ref, 'form')
       @bindAsArray(ref.child('fields'), 'fields')
 
   makeId: (string) ->
@@ -145,45 +147,51 @@ module.exports = React.createClass
           Event Registration
         </h2>
         <hr />
-        <form className={'signup'}>
-          <input className={'first_name'} type={'text'} id={'first_name'} placeholder={'First Name'} required={true} />
-          <input className={'last_name'} type={'text'} id={'last_name'} placeholder={'Last Name'} required={true} />
-          <MaskedInput className={'phone'} type={'tel'} id={'phone'} placeholder={'Cell Phone #'} mask={'(999) 999-9999'} required={@state.phoneRequired} />
-          <input className={'email'} type={'email'} id={'email'} placeholder={'Email Address'} required={true} onBlur={@checkEmail} />
-          { if @state.showSuggestion
-            <div className={'email-suggestion'} onClick={@acceptSuggestion}>
-              <span className={'suggestion'}>
-                Did you mean {@state.suggestion.address}@<strong>{@state.suggestion.domain}</strong>?
-              </span>
-              <span className={'x'} onClick={@declineSuggestion}>X</span>
-            </div>
-          }
+        {if @state.form['.value'] is null
+          <p className={'no-form'}>No form exists at this URL -- please double-check spelling or contact event staff.</p>
+        else if @props.params.slug && @state.form is false
+          <div />
+        else
+          <form className={'signup'}>
+            <input className={'first_name'} type={'text'} id={'first_name'} placeholder={'First Name'} required={true} />
+            <input className={'last_name'} type={'text'} id={'last_name'} placeholder={'Last Name'} required={true} />
+            <MaskedInput className={'phone'} type={'tel'} id={'phone'} placeholder={'Cell Phone #'} mask={'(999) 999-9999'} required={@state.phoneRequired} />
+            <input className={'email'} type={'email'} id={'email'} placeholder={'Email Address'} required={true} onBlur={@checkEmail} />
+            { if @state.showSuggestion
+              <div className={'email-suggestion'} onClick={@acceptSuggestion}>
+                <span className={'suggestion'}>
+                  Did you mean {@state.suggestion.address}@<strong>{@state.suggestion.domain}</strong>?
+                </span>
+                <span className={'x'} onClick={@declineSuggestion}>X</span>
+              </div>
+            }
 
-          <MaskedInput className={'zip'} id={'zip'} name={'zip'} placeholder={'Zip Code'} type={'tel'} required={true} mask={'99999'} />
+            <MaskedInput className={'zip'} id={'zip'} name={'zip'} placeholder={'Zip Code'} type={'tel'} required={true} mask={'99999'} />
 
-          {for field, idx in @state.fields when field.type is 'text'
-            <input className={'custom_field'} key={idx} type={'text'} id={@makeId(field.title)} placeholder={field.title} required={true} />
-          }
+            {for field, idx in @state.fields when field.type is 'text'
+              <input className={'custom_field'} key={idx} type={'text'} id={@makeId(field.title)} placeholder={field.title} required={true} />
+            }
 
-          <div className={'checkboxgroup'}>
-            <input type={'checkbox'} id={'canText'} onChange={@canTextChange} />
-            <label htmlFor={'canText'} className={'checkbox-label'}>
-              Receive text msgs from Bernie 2016
-              <span className={'disclaimer'}><br />Msg and data rates may apply</span>
-            </label>
-          </div>
-
-          {for field, idx in @state.fields when field.type is 'checkbox'
-            <div className={'checkboxgroup'} key={idx}>
-              <input type={'checkbox'} id={@makeId(field.title)} />
-              <label className={'checkbox-label'}>
-                {field.title}
+            <div className={'checkboxgroup'}>
+              <input type={'checkbox'} id={'canText'} onChange={@canTextChange} />
+              <label htmlFor={'canText'} className={'checkbox-label'}>
+                Receive text msgs from Bernie 2016
+                <span className={'disclaimer'}><br />Msg and data rates may apply</span>
               </label>
             </div>
-          }
 
-          <a href={'#'} className={'btn'} onClick={@submitForm}>Sign Up</a>
-        </form>
+            {for field, idx in @state.fields when field.type is 'checkbox'
+              <div className={'checkboxgroup'} key={idx}>
+                <input type={'checkbox'} id={@makeId(field.title)} />
+                <label className={'checkbox-label'}>
+                  {field.title}
+                </label>
+              </div>
+            }
+
+            <a href={'#'} className={'btn'} onClick={@submitForm}>Sign Up</a>
+          </form>
+        }
       </section>
 
       <section className={"ticket #{'hidden' unless @viewTicket()}"}>
