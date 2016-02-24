@@ -1,6 +1,6 @@
-React = require('react')
-ReactFireMixin = require('reactfire')
-FirebaseUtils = require('../utils/firebaseUtils.coffee')
+import React          from 'react'
+import ReactFireMixin from 'reactfire'
+import FirebaseUtils  from 'utils/firebaseUtils'
 
 module.exports = React.createClass
   mixins: [ReactFireMixin]

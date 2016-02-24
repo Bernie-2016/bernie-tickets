@@ -1,10 +1,11 @@
-React = require('react')
-MaskedInput = require('react-input-mask')
-Mailcheck = require('mailcheck')
-Fabric = require('fabric').fabric
-FirebaseUtils = require('../utils/firebaseUtils.coffee')
-ReactFireMixin = require('reactfire')
-require('../../node_modules/jquery-qrcode/dist/jquery.qrcode')
+import React          from 'react'
+import MaskedInput    from 'react-input-mask'
+import Mailcheck      from 'mailcheck'
+import ReactFireMixin from 'reactfire'
+import QRCode         from 'qrcode.react'
+import $              from 'jquery'
+import _              from 'lodash'
+import FirebaseUtils  from 'utils/firebaseUtils'
 
 module.exports = React.createClass
   mixins: [ReactFireMixin]
@@ -21,6 +22,7 @@ module.exports = React.createClass
       showSuggestion: false
       fields: []
       form: false
+      string: ''
     }
 
   viewForm: ->
@@ -93,52 +95,23 @@ module.exports = React.createClass
       'canText'
     ]
     string = JSON.stringify(allFields.map( (key) -> data[key] )).slice(1, -1)
+    @setState(view: 'TICKET', string: string)
 
-    # Generate QR code
-    $('#qr-img').qrcode
-      render: 'image'
-      text: string
-      size: 375
-      fill: '#147FD7'
-      background: '#FFF'
+    canvas = $('canvas')[0]
 
-    # Create canvas
-    canvas = new Fabric.Canvas('qr')
-    canvas.selection = false
-    canvas.setBackgroundColor('#ffffff')
+    # Set save button to download the canvas
+    $('#save').attr('href', canvas.toDataURL())
 
-    # Add text to canvas
-    text = new Fabric.Text('Bernie 2016', top: 15, left: 90, fontFamily: 'jubilat', fill: '#147FD7')
-    canvas.add(text)
-    text.set(evented: false)
-    text = new Fabric.Text('Event Ticket', top: 462.5, left: 90, fontFamily: 'jubilat', fill: '#147FD7')
-    canvas.add(text)
-    text.set(evented: false)
-
-    # Add img to canvas
-    Fabric.Image.fromURL $('#qr-img img').attr('src'), (img) ->
-      img.set(top: 72.5, left: 12.5, evented: false)
-      canvas.add(img)
-
-      # Dynamically set canvas size
-      canvas.setWidth($('.canvas-container').width())
-      canvas.setHeight($('.canvas-container').width() * 1.3)
-
-      # Set save button to download the canvas
-      $('#save').attr('href', canvas.toDataURL())
-
-      # Set print button to print the canvas
-      $('#print').on 'click', ->
-        windowContent = "<html><body><img src='#{canvas.toDataURL()}' /></body></html>"
-        printWin = window.open()
-        printWin.document.open()
-        printWin.document.write(windowContent)
-        printWin.document.close()
-        printWin.focus()
-        printWin.print()
-        printWin.close()
-
-    @setState(view: 'TICKET')
+    # Set print button to print the canvas
+    $('#print').on 'click', ->
+      windowContent = "<html><body><img src='#{canvas.toDataURL()}' style='width: 400px;' /></body></html>"
+      printWin = window.open()
+      printWin.document.open()
+      printWin.document.write(windowContent)
+      printWin.document.close()
+      printWin.focus()
+      printWin.print()
+      printWin.close()
 
   render: ->
     <div>
@@ -195,8 +168,9 @@ module.exports = React.createClass
       </section>
 
       <section className={"ticket #{'hidden' unless @viewTicket()}"}>
-        <div id={'qr-img'}></div>
-        <canvas id={'qr'} width={'400'} height={'520'}></canvas>
+        <h2>Bernie 2016</h2>
+        <QRCode value={@state.string} size={300} fgColor={'#147FD7'} />
+        <h2>Event Ticket</h2>
         <a id={'print'} className={'btn'}>
           Print
         </a><br />

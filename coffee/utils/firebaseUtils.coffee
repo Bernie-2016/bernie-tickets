@@ -1,4 +1,4 @@
-Firebase = require('firebase')
+import Firebase from 'firebase'
 ref = new Firebase('https://bernie-tickets.firebaseio.com')
 cachedUser = null
 

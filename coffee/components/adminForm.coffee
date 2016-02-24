@@ -1,9 +1,8 @@
-React = require('react')
-Link = require('react-router').Link
-ReactFireMixin = require('reactfire')
-FirebaseUtils = require('../utils/firebaseUtils.coffee')
-
-Field = require('./adminFormField.coffee')
+import React          from 'react'
+import { Link }       from 'react-router'
+import ReactFireMixin from 'reactfire'
+import FirebaseUtils  from 'utils/firebaseUtils'
+import Field          from 'components/adminFormField'
 
 module.exports = React.createClass
   mixins: [ReactFireMixin]

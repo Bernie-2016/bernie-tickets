@@ -1,24 +1,20 @@
-ReactDOM = require('react-dom')
-React = require('react')
-Router = require('react-router').Router
-Route = require('react-router').Route
-createBrowserHistory = require('history/lib/createBrowserHistory')
-FirebaseUtils = require('./utils/firebaseUtils.coffee')
-
-window.jQuery = window.$ = require('jquery')
-window._ = require('lodash')
+import ReactDOM          from 'react-dom'
+import React             from 'react'
+import { Router, Route } from 'react-router'
+import createHistory     from 'history/lib/createBrowserHistory'
+import FirebaseUtils     from 'utils/firebaseUtils'
 
 # Require route components.
-App = require('./components/app.coffee')
-Form = require('./components/form.coffee')
-Login = require('./components/login.coffee')
-Admin = require('./components/admin.coffee')
-AdminForms = require('./components/adminForms.coffee')
-AdminForm = require('./components/adminForm.coffee')
+import App        from 'components/app'
+import Form       from 'components/form'
+import Login      from 'components/login'
+import Admin      from 'components/admin'
+import AdminForms from 'components/adminForms'
+import AdminForm  from 'components/adminForm'
 
 # Define up and render routes.
 router = (
-  <Router history={createBrowserHistory()}>
+  <Router history={createHistory()}>
     <Route component={App}>
       <Route component={Admin}>
         <Route path='/admin/forms/:slug' component={AdminForm} />
@@ -32,4 +28,7 @@ router = (
     </Route>
   </Router>
 )
-ReactDOM.render(router, document.getElementById('app'))
+
+container = document.createElement('div')
+document.body.appendChild(container)
+ReactDOM.render(router, container)

@@ -1,6 +1,6 @@
-React = require('react')
-History = require('react-router').History
-FirebaseUtils = require('../utils/firebaseUtils.coffee')
+import React         from 'react'
+import { History }   from 'react-router'
+import FirebaseUtils from 'utils/firebaseUtils'
 
 module.exports = React.createClass
   mixins: [History]
