@@ -1,14 +1,11 @@
-import React          from 'react'
-import MaskedInput    from 'react-input-mask'
-import Mailcheck      from 'mailcheck'
-import ReactFireMixin from 'reactfire'
-import QRCode         from 'qrcode.react'
-import $              from 'jquery'
-import _              from 'lodash'
-import FirebaseUtils  from 'utils/firebaseUtils'
+import React       from 'react'
+import MaskedInput from 'react-input-mask'
+import Mailcheck   from 'mailcheck'
+import QRCode      from 'qrcode.react'
+import $           from 'jquery'
+import _           from 'lodash'
 
 module.exports = React.createClass
-  mixins: [ReactFireMixin]
   displayName: 'Form'
 
   contextTypes:

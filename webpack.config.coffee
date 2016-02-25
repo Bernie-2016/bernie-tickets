@@ -1,5 +1,7 @@
 path              = require('path')
+webpack           = require('webpack')
 HtmlWebpackPlugin = require('html-webpack-plugin')
+CopyWebpackPlugin = require('copy-webpack-plugin')
 
 module.exports =
   entry: './coffee/router'
@@ -17,6 +19,10 @@ module.exports =
         loaders: ['coffee', 'cjsx', 'coffee-import']
       }
       {
+        test: /\.css$/
+        loaders: ['style', 'css']
+      }
+      {
         test: /\.scss$/
         loaders: ['style', 'css', 'resolve-url', 'sass']
       }
@@ -32,8 +38,17 @@ module.exports =
         minify:
           collapseWhitespace: true
       )
+      new CopyWebpackPlugin([
+        {
+          from: 'img/favicon.ico'
+          to: 'favicon.ico'
+        }
+      ])
+      new webpack.DefinePlugin(
+        __PROD__: process.env.BUILD_PROD is 'true'
+      )
     ]
 
   resolve:
-    root: [path.resolve('./coffee'), path.resolve('./'), path.resolve('./node_modules')]
-    extensions: ['', '.js', '.coffee', '.scss', '.svg']
+    root: [path.resolve('./coffee'), path.resolve('./')]
+    extensions: ['', '.js', '.coffee', '.scss', '.css', '.svg']

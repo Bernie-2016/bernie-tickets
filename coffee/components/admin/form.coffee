@@ -1,11 +1,8 @@
-import React          from 'react'
-import { Link }       from 'react-router'
-import ReactFireMixin from 'reactfire'
-import FirebaseUtils  from 'utils/firebaseUtils'
-import Field          from 'components/adminFormField'
+import React    from 'react'
+import { Link } from 'react-router'
+import Field    from 'components/admin/formField'
 
 module.exports = React.createClass
-  mixins: [ReactFireMixin]
   displayName: 'AdminForm'
 
   contextTypes:

@@ -1,9 +1,6 @@
-import React          from 'react'
-import ReactFireMixin from 'reactfire'
-import FirebaseUtils  from 'utils/firebaseUtils'
+import React from 'react'
 
 module.exports = React.createClass
-  mixins: [ReactFireMixin]
   displayName: 'AdminFormField'
 
   contextTypes:
