@@ -1,39 +1,43 @@
 import React       from 'react'
-import MaskedInput from 'react-input-mask'
+import Fluxxor     from 'fluxxor'
+import { Input }   from 'react-bootstrap'
 import Mailcheck   from 'mailcheck'
 import QRCode      from 'qrcode.react'
 import $           from 'jquery'
-import _           from 'lodash'
+import MaskedInput from 'components/maskedInput'
 
 module.exports = React.createClass
   displayName: 'Form'
 
+  mixins: [Fluxxor.FluxMixin(React), Fluxxor.StoreWatchMixin('FormStore')]
+
   contextTypes:
     router: React.PropTypes.func
 
-  getInitialState: ->
+  getStateFromFlux: ->
+    store = @props.flux.store('FormStore')
+
     {
+      title: store.title
+      fields: store.fields || []
+      loaded: store.loaded
+      error: store.error
       view: 'FORM'
-      phoneRequired: false
       suggestion: {}
       showSuggestion: false
-      fields: []
       form: false
-      string: ''
+      qrString: ''
+      firstName: ''
+      lastName: ''
+      phone: ''
+      email: ''
+      zip: ''
+      canText: false
     }
-
-  viewForm: ->
-    @state.view is 'FORM'
-
-  viewTicket: ->
-    @state.view is 'TICKET'
-
-  canTextChange: (e) ->
-    @setState(phoneRequired: $(e.target).is(':checked'))
 
   checkEmail: (e) ->
     Mailcheck.run(
-      email: $(e.target).val()
+      email: @state.email
       suggested: (suggestion) =>
         @setState(suggestion: suggestion, showSuggestion: true)
       empty: =>
@@ -42,45 +46,28 @@ module.exports = React.createClass
 
   acceptSuggestion: (e) ->
     return if $(e.target).is('.x')
-    $('#email').val @state.suggestion.full
+    @setState(email: @state.suggestion.full)
     @setState(suggestion: {}, showSuggestion: false)
 
   declineSuggestion: ->
     @setState(suggestion: {}, showSuggestion: false)
 
-  componentWillMount: ->
-    if @props.params.slug
-      ref = FirebaseUtils.fb("forms/#{@props.params.slug.toLowerCase()}")
-      @bindAsObject(ref, 'form')
-      @bindAsArray(ref.child('fields'), 'fields')
-
-  makeId: (string) ->
-    string = string.toLowerCase()
-    string = string.replace(/[^a-zA-Z ]/g, "")
-    string = string.split(" ").join("")
+  componentDidMount: ->
+    @props.flux.actions.admin.form.load(
+      slug: @props.params.slug
+      @props.flux.store('AuthStore').authToken
+    )
 
   submitForm: (e) ->
     e.preventDefault()
 
     data =
-      first_name: $('#first_name').val()
-      last_name: $('#last_name').val()
-      phone: $('#phone').val()
-      email: $('#email').val()
-      zip: $('#zip').val()
-      canText: $('#canText').prop('checked')
-
-    # If this is a custom form, save the response to Firebase.
-    if @props.params.slug
-      formData = _.cloneDeep(data)
-
-      for field in @state.fields
-        if field.type is 'checkbox'
-          formData[field.title] = $("##{@makeId(field.title)}").prop('checked')
-        else
-          formData[field.title] = $("##{@makeId(field.title)}").val()
-
-      FirebaseUtils.fb("forms/#{@props.params.slug.toLowerCase()}/responses").push(formData)
+      first_name: @state.firstName
+      last_name: @state.lastName
+      phone: @state.phone
+      email: @state.email
+      zip: @state.zip
+      canText: @state.canText
 
     # Stringify basic fields.
     allFields = [
@@ -92,86 +79,82 @@ module.exports = React.createClass
       'canText'
     ]
     string = JSON.stringify(allFields.map( (key) -> data[key] )).slice(1, -1)
-    @setState(view: 'TICKET', string: string)
-
     canvas = $('canvas')[0]
+    @setState(view: 'TICKET', qrString: string, dataUrl: canvas.toDataUrl())
 
-    # Set save button to download the canvas
-    $('#save').attr('href', canvas.toDataURL())
-
-    # Set print button to print the canvas
-    $('#print').on 'click', ->
-      windowContent = "<html><body><img src='#{canvas.toDataURL()}' style='width: 400px;' /></body></html>"
-      printWin = window.open()
-      printWin.document.open()
-      printWin.document.write(windowContent)
-      printWin.document.close()
-      printWin.focus()
-      printWin.print()
-      printWin.close()
+  onPrint: (e) ->
+    e.preventDefault()
+    windowContent = "<html><body><img src='#{@state.dataUrl}' style='width: 400px;' /></body></html>"
+    printWin = window.open()
+    printWin.document.open()
+    printWin.document.write(windowContent)
+    printWin.document.close()
+    printWin.focus()
+    printWin.print()
+    printWin.close()
 
   render: ->
     <div>
-      <section className={"form #{'hidden' unless @viewForm()}"}>
+      <section className={"form #{'hidden' unless @state.view is 'FORM'}"}>
         <h2>
           Event Registration
         </h2>
         <hr />
-        {if @state.form['.value'] is null
-          <p className={'no-form'}>No form exists at this URL -- please double-check spelling or contact event staff.</p>
-        else if @props.params.slug && @state.form is false
-          <div />
+        {if @state.error
+          <p className='no-form'>
+            No form exists at this URL -- please double-check spelling or contact event staff.
+          </p>
         else
-          <form className={'signup'}>
-            <input className={'first_name'} type={'text'} id={'first_name'} placeholder={'First Name'} required={true} />
-            <input className={'last_name'} type={'text'} id={'last_name'} placeholder={'Last Name'} required={true} />
-            <MaskedInput className={'phone'} type={'tel'} id={'phone'} placeholder={'Cell Phone #'} mask={'(999) 999-9999'} required={@state.phoneRequired} />
-            <input className={'email'} type={'email'} id={'email'} placeholder={'Email Address'} required={true} onBlur={@checkEmail} />
+          <form className='signup'>
+            <Input type='text' placeholder='First Name' required={true} value={@state.firstName} onChange={ (e) => @setState(firstName: e.target.value) } />
+            <Input type='text' placeholder='Last Name' required={true} value={@state.lastName} onChange={ (e) => @setState(lastName: e.target.value) } />
+            <MaskedInput type='tel' placeholder='Cell Phone #' mask='(111) 111-1111' required={@state.canText} value={@state.phone} onChange={ (e) => @setState(phone: e.target.value) } />
+            <Input type='email' placeholder='Email Address' required={true} onBlur={@checkEmail} value={@state.email} onChange={ (e) => @setState(email: e.target.value) } />
             { if @state.showSuggestion
-              <div className={'email-suggestion'} onClick={@acceptSuggestion}>
-                <span className={'suggestion'}>
+              <div className='email-suggestion' onClick={@acceptSuggestion}>
+                <span className='suggestion'>
                   Did you mean {@state.suggestion.address}@<strong>{@state.suggestion.domain}</strong>?
                 </span>
-                <span className={'x'} onClick={@declineSuggestion}>X</span>
+                <span className='x' onClick={@declineSuggestion}>X</span>
               </div>
             }
 
-            <MaskedInput className={'zip'} id={'zip'} name={'zip'} placeholder={'Zip Code'} type={'tel'} required={true} mask={'99999'} />
+            <MaskedInput name='zip' placeholder='Zip Code' type='tel' mask='11111' required={true} value={@state.zip} onChange={ (e) => @setState(zip: e.target.value) } />
 
-            {for field, idx in @state.fields when field.type is 'text'
-              <input className={'custom_field'} key={idx} type={'text'} id={@makeId(field.title)} placeholder={field.title} required={true} />
+            {for field in @state.fields when field.type is 'text'
+              <Input className='custom_field' key={field.id} type='text' placeholder={field.title} required={true} />
             }
 
-            <div className={'checkboxgroup'}>
-              <input type={'checkbox'} id={'canText'} onChange={@canTextChange} />
-              <label htmlFor={'canText'} className={'checkbox-label'}>
+            <div className='checkboxgroup'>
+              <Input type='checkbox' id='canText' onChange={ (e) => @setState(canText: $(e.target).is(':checked')) } />
+              <label htmlFor='canText' className='checkbox-label'>
                 Receive text msgs from Bernie 2016
-                <span className={'disclaimer'}><br />Msg and data rates may apply</span>
+                <span className='disclaimer'><br />Msg and data rates may apply</span>
               </label>
             </div>
 
-            {for field, idx in @state.fields when field.type is 'checkbox'
-              <div className={'checkboxgroup'} key={idx}>
-                <input type={'checkbox'} id={@makeId(field.title)} />
-                <label className={'checkbox-label'}>
+            {for field in @state.fields when field.type is 'checkbox'
+              <div className='checkboxgroup' key={field.id}>
+                <Input type='checkbox' />
+                <label className='checkbox-label'>
                   {field.title}
                 </label>
               </div>
             }
 
-            <a href={'#'} className={'btn'} onClick={@submitForm}>Sign Up</a>
+            <a href='#' className='btn' onClick={@submitForm}>Sign Up</a>
           </form>
         }
       </section>
 
-      <section className={"ticket #{'hidden' unless @viewTicket()}"}>
+      <section className={"ticket #{'hidden' unless @state.view is 'TICKET'}"}>
         <h2>Bernie 2016</h2>
-        <QRCode value={@state.string} size={300} fgColor={'#147FD7'} />
+        <QRCode value={@state.qrString} size={300} fgColor='#147FD7' />
         <h2>Event Ticket</h2>
-        <a id={'print'} className={'btn'}>
+        <a className='btn' onClick={@onPrint}>
           Print
         </a><br />
-        <a id={'save'} download={'ticket.png'} className={'btn'}>
+        <a href={@state.dataUrl} id='save' download='ticket.png' className='btn'>
           Save
         </a>
       </section>

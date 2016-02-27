@@ -2,7 +2,6 @@ import React             from 'react'
 import Fluxxor           from 'fluxxor'
 import { History, Link } from 'react-router'
 import { Row, Col }      from 'react-bootstrap'
-import Loader            from 'react-loader'
 import Form              from 'components/admin/formForm'
 
 module.exports = React.createClass
@@ -17,7 +16,6 @@ module.exports = React.createClass
       title: ''
       slug: ''
       fields: []
-      loaded: store.loaded
       error: store.error
       createdId: store.createdId
     }
@@ -40,11 +38,9 @@ module.exports = React.createClass
     @history.pushState(null, "/admin/forms/#{@state.createdId}") if @state.createdId
 
   render: ->
-    <Loader loaded={@state.loaded}>
-      <Row>
-        <Col md={6} xs={12}>
-          <h1>New Form</h1>
-          <Form title={@state.title} slug={@state.slug} fields={@state.fields} set={@set} submit={@submit} submitText='Create Form' /> 
-        </Col>
-      </Row>
-    </Loader>
+    <Row>
+      <Col md={6} xs={12}>
+        <h1>New Form</h1>
+        <Form title={@state.title} slug={@state.slug} fields={@state.fields} set={@set} submit={@submit} submitText='Create Form' /> 
+      </Col>
+    </Row>

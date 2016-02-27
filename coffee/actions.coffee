@@ -23,6 +23,17 @@ module.exports =
         Client.get('/forms', authToken, {}, success, failure)
 
     form:
+      load: (payload) ->
+        @dispatch(constants.ADMIN.FORM.LOAD)
+
+        success = (response) =>
+          @dispatch(constants.ADMIN.FORM.LOAD_SUCCESS, response)
+
+        failure = =>
+          @dispatch(constants.ADMIN.FORM.LOAD_FAILURE)
+
+        Client.get("/forms/#{payload.slug}", payload.authToken, {}, success, failure)
+
       create: (payload) ->
         @dispatch(constants.ADMIN.FORMS.CREATE)
 
