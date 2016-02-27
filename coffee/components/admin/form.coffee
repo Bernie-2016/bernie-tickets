@@ -1,81 +1,66 @@
-import React    from 'react'
-import { Link } from 'react-router'
-import Field    from 'components/admin/formField'
+import React             from 'react'
+import Fluxxor           from 'fluxxor'
+import { History, Link } from 'react-router'
+import { Row, Col }      from 'react-bootstrap'
+import Loader            from 'react-loader'
+import _                 from 'lodash'
 
 module.exports = React.createClass
   displayName: 'AdminForm'
 
-  contextTypes:
-    router: React.PropTypes.func
+  mixins: [Fluxxor.FluxMixin(React), Fluxxor.StoreWatchMixin('AuthStore', 'FormsStore'), History]
 
-  getInitialState: ->
+  getStateFromFlux: ->
+    store = @props.flux.store('FormsStore')
+    form = _.find(store.forms, id: parseInt(@props.params.id)) || {}
+
     {
-      form: null
-      fields: []
-      responses: []
+      title: form.title
+      slug: form.slug
+      fields: form.questions || []
+      loaded: store.loaded
+      error: store.error
+      destroyedId: store.destroyedId
     }
 
-  updateTitle: (e) ->
-    @firebaseRefs['form'].update(title: e.target.value)
-
-  addField: (e) ->
+  deleteForm: (e) ->
     e.preventDefault()
-    @firebaseRefs['fields'].push(title: 'New Field', type: 'text')
+    if confirm('Are you sure you want to delete this form? This action cannot be undone.')
+      @props.flux.actions.admin.form.destroy(
+        authToken: @props.flux.store('AuthStore').authToken
+        id: parseInt(@props.params.id)
+      )
 
-  download: (e) ->
-    e.preventDefault()
-    columns = ['First name', 'Last name', 'Phone', 'Email', 'Zip', 'Can text?']
-    columns.push field.title for field in @state.fields
+  componentDidMount: ->
+    @props.flux.actions.admin.forms.load(@props.flux.store('AuthStore').authToken) unless @state.loaded
 
-    data = [columns]
-
-    for response in @state.responses
-      row = [response.first_name, response.last_name, response.phone, response.email, response.zip, response.canText]
-      row.push response[field.title] for field in @state.fields
-      data.push row
-
-    csvContent = 'data:text/csv;charset=utf-8,'
-
-    for row, index in data
-      csvContent += row.join(',')
-      csvContent += "\n" if index < data.length
-
-    window.open(encodeURI(csvContent))
-
-  componentWillMount: ->
-    ref = FirebaseUtils.fb("forms/#{@props.params.slug.toLowerCase()}")
-    @bindAsObject(ref, 'form')
-    @bindAsArray(ref.child('fields'), 'fields')
-    @bindAsArray(ref.child('responses'), 'responses')
+  componentDidUpdate: ->
+    @history.pushState(null, '/admin/forms') if @state.destroyedId
 
   render: ->
-    <div>
-      <div className={'admin-form-section'}>
-        <label>Form Name: </label>
-        <input type={'text'} value={@state.form.title if @state.form} onChange={@updateTitle} />
-        <br />
-
-        <div className={'fields'}>
-          {for field in @state.fields
-            <Field id={field['.key']} slug={@props.params.slug} key={field['.key']} />
-          }
+    <Loader loaded={@state.loaded}>
+      <h1>{@state.title}</h1>
+      
+      {if _.isEmpty(@state.fields)
+        <h4>No custom fields</h4>
+      else
+        <h4>Fields:</h4>
+      }
+      {for field in @state.fields
+        <div key={field.id}>
+          <p>
+            <strong>Title:</strong> {field.title}
+          </p>
+          <p>
+            <strong>Type:</strong> {field.type}
+          </p>
+          <hr />
         </div>
-
-        <button onClick={@addField}>Add A Custom Field</button>
-        <br/>
-        <br/>
-
-        {if @state.form
-          <Link to={"/#{@state.form['.key']}"} className={'view'}>See How It Looks! -></Link>
-        }
-      </div>
-
-      <hr />
-
-      <div className={'admin-form-section'}>
-        <span>Responses: {@state.responses.length}</span>
-        <br />
-        <br />
-        <a onClick={@download} className={'btn forms-link'}>Download</a>
-      </div>
-    </div>
+      }
+      <Link to={"/admin/forms/#{@props.params.id}/edit"} className='btn'>
+        Edit
+      </Link>
+      <a href='#' className='btn' onClick={@deleteForm}>
+        Delete
+      </a>
+    </Loader>

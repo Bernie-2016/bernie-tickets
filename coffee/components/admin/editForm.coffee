@@ -3,23 +3,28 @@ import Fluxxor           from 'fluxxor'
 import { History, Link } from 'react-router'
 import { Row, Col }      from 'react-bootstrap'
 import Loader            from 'react-loader'
+import _                 from 'lodash'
 import Form              from 'components/admin/formForm'
 
 module.exports = React.createClass
-  displayName: 'AdminNewForm'
+  displayName: 'AdminEditForm'
+
+  contextTypes:
+    router: React.PropTypes.func
 
   mixins: [Fluxxor.FluxMixin(React), Fluxxor.StoreWatchMixin('AuthStore', 'FormsStore'), History]
 
   getStateFromFlux: ->
     store = @props.flux.store('FormsStore')
+    form = _.find(store.forms, id: parseInt(@props.params.id)) || {}
 
     {
-      title: ''
-      slug: ''
-      fields: []
+      title: form.title
+      slug: form.slug
+      fields: form.questions || []
       loaded: store.loaded
       error: store.error
-      createdId: store.createdId
+      updatedId: store.updatedId
     }
 
   set: (payload) ->
@@ -27,8 +32,10 @@ module.exports = React.createClass
 
   submit: (e) ->
     e.preventDefault()
-    @props.flux.actions.admin.form.create(
+
+    @props.flux.actions.admin.form.update(
       authToken: @props.flux.store('AuthStore').authToken
+      id: @props.params.id
       data:
         form:
           title: @state.title
@@ -36,15 +43,18 @@ module.exports = React.createClass
           questions_attributes: @state.fields
     )
 
+  componentDidMount: ->
+    @props.flux.actions.admin.forms.load(@props.flux.store('AuthStore').authToken) unless @state.loaded
+
   componentDidUpdate: ->
-    @history.pushState(null, "/admin/forms/#{@state.createdId}") if @state.createdId
+    @history.pushState(null, "/admin/forms/#{@state.updatedId}") if @state.updatedId
 
   render: ->
     <Loader loaded={@state.loaded}>
       <Row>
         <Col md={6} xs={12}>
-          <h1>New Form</h1>
-          <Form title={@state.title} slug={@state.slug} fields={@state.fields} set={@set} submit={@submit} submitText='Create Form' /> 
+          <h1>Edit Form</h1>
+          <Form title={@state.title} slug={@state.slug} fields={@state.fields} set={@set} submit={@submit} submitText='Update Form' /> 
         </Col>
       </Row>
     </Loader>

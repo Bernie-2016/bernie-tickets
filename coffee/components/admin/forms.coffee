@@ -3,6 +3,7 @@ import Fluxxor                      from 'fluxxor'
 import { History, Link }            from 'react-router'
 import { Table, Thead, Th, Tr, Td } from 'reactable'
 import Loader                       from 'react-loader'
+import $                            from 'jquery'
 
 module.exports = React.createClass
   displayName: 'AdminForms'
@@ -19,7 +20,15 @@ module.exports = React.createClass
     }
 
   componentDidMount: ->
-    @props.flux.actions.admin.forms.load(@props.flux.store('AuthStore').authToken)
+    @props.flux.actions.admin.forms.load(@props.flux.store('AuthStore').authToken) unless @state.loaded
+
+  deleteForm: (e) ->
+    e.preventDefault()
+    if confirm('Are you sure you want to delete this form? This action cannot be undone.')
+      @props.flux.actions.admin.form.destroy(
+        authToken: @props.flux.store('AuthStore').authToken
+        id: $(e.target).data('id')
+      )
 
   render: ->
     <Loader loaded={@state.loaded}>
@@ -39,13 +48,13 @@ module.exports = React.createClass
         {for form in @state.forms
           <Tr key={form.id}>
             <Td column='title'>
-              {form.title}
+              <Link to={"/admin/forms/#{form.id}"}>{form.title}</Link>
             </Td>
             <Td column='edit'>
-              <a href='#'>Edit</a>
+              <Link to={"/admin/forms/#{form.id}/edit"}>Edit</Link>
             </Td>
             <Td column='delete'>
-              <a href='#'>Delete</a>
+              <a href='#' data-id={form.id} onClick={@deleteForm}>Delete</a>
             </Td>
           </Tr>
         }

@@ -48,6 +48,10 @@ a.btn {
   padding: 10px 20px;
   text-align: center;
 
+  &:not(:first-of-type) {
+    margin-left: 15px;
+  }
+
   &:hover {
     color: white;
     cursor: pointer;
