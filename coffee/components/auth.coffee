@@ -19,7 +19,7 @@ module.exports = React.createClass
     params = query.stringify(
       response_type: 'token'
       client_id: '460408574804-mlgtiucon06jaadqpltkf36u21hvku9b.apps.googleusercontent.com'
-      scope: 'profile'
+      scope: 'profile email'
       redirect_uri: if __PROD__ then 'https://bernietickets.com/callback' else 'http://localhost:8080/callback'
     )
     window.location.href = "https://accounts.google.com/o/oauth2/v2/auth?#{params}"

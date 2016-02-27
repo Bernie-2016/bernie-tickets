@@ -7,10 +7,12 @@ import Auth          from 'components/auth'
 import Authenticated from 'components/authenticated'
 import AdminForms    from 'components/admin/forms'
 import AdminForm     from 'components/admin/form'
+import AdminNewForm  from 'components/admin/newForm'
 
 module.exports = (
   <Route component={App}>
     <Route component={Authenticated}>
+      <Route path='/admin/forms/new' component={AdminNewForm} />
       <Route path='/admin/forms/:slug' component={AdminForm} />
       <Route path='/admin/forms' component={AdminForms} />
       <Route path='/admin' component={AdminForms} />

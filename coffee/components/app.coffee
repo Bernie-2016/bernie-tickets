@@ -1,7 +1,7 @@
 import React from 'react'
 
-require('scss/app')
 require('bootstrap/dist/css/bootstrap')
+require('scss/app')
 
 module.exports = React.createClass
   displayName: 'App'

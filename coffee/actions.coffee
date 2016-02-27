@@ -1,7 +1,5 @@
-import $         from 'jquery'
+import Client    from 'client'
 import constants from 'constants'
-
-host = if __PROD__ then 'https://sanders-api.herokuapp.com' else 'http://localhost:3000'
 
 module.exports =
   auth:
@@ -13,7 +11,7 @@ module.exports =
 
   admin:
     forms:
-      load: ->
+      load: (authToken) ->
         @dispatch(constants.ADMIN.FORMS.LOAD)
 
         success = (response) =>
@@ -22,4 +20,18 @@ module.exports =
         failure = =>
           @dispatch(constants.ADMIN.FORMS.LOAD_FAILURE)
 
-        $.get("#{host}/api/v1/forms", success).fail(failure)
+        Client.get('/forms', authToken, {}, success, failure)
+
+    form:
+      create: (payload) ->
+        @dispatch(constants.ADMIN.FORM.CREATE)
+
+        success = (response) =>
+          @dispatch(constants.ADMIN.FORM.CREATE_SUCCESS, response)
+
+        failure = =>
+          @dispatch(constants.ADMIN.FORM.CREATE_FAILURE)
+
+        Client.post('/forms', payload.authToken, payload.data, success, failure)
+
+        $.post("#{host}/api/v1/forms", success).fail(failure)

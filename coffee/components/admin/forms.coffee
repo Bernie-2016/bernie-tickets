@@ -1,6 +1,6 @@
 import React                        from 'react'
 import Fluxxor                      from 'fluxxor'
-import { History }                  from 'react-router'
+import { History, Link }            from 'react-router'
 import { Table, Thead, Th, Tr, Td } from 'reactable'
 import Loader                       from 'react-loader'
 
@@ -23,6 +23,7 @@ module.exports = React.createClass
 
   render: ->
     <Loader loaded={@state.loaded}>
+      <Link to={'/admin/forms/new'} className='btn'>New Form</Link>
       <Table className='table table-striped' filterable={['title']} noDataText='No forms.'>
         <Thead>
           <Th column='title'>
