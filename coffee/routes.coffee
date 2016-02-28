@@ -5,11 +5,11 @@ import App           from 'components/app'
 import Form          from 'components/form'
 import Auth          from 'components/auth'
 import Authenticated from 'components/authenticated'
-import AdminForms    from 'components/admin/forms'
-import AdminForm     from 'components/admin/form'
-import AdminNewForm  from 'components/admin/newForm'
-import AdminEditForm from 'components/admin/editForm'
-import AdminEvents   from 'components/admin/events'
+import AdminForms    from 'components/admin/forms/index'
+import AdminForm     from 'components/admin/forms/show'
+import AdminNewForm  from 'components/admin/forms/new'
+import AdminEditForm from 'components/admin/forms/edit'
+import AdminEvents   from 'components/admin/events/index'
 
 module.exports = (
   <Route component={App}>

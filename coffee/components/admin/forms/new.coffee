@@ -2,7 +2,7 @@ import React             from 'react'
 import Fluxxor           from 'fluxxor'
 import { History, Link } from 'react-router'
 import { Row, Col }      from 'react-bootstrap'
-import Form              from 'components/admin/formForm'
+import Form              from 'components/admin/forms/form'
 
 module.exports = React.createClass
   displayName: 'AdminNewForm'

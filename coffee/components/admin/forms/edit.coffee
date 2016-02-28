@@ -4,7 +4,7 @@ import { History, Link } from 'react-router'
 import { Row, Col }      from 'react-bootstrap'
 import Loader            from 'react-loader'
 import _                 from 'lodash'
-import Form              from 'components/admin/formForm'
+import Form              from 'components/admin/forms/form'
 
 module.exports = React.createClass
   displayName: 'AdminEditForm'
