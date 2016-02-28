@@ -4,6 +4,7 @@ import { History, Link } from 'react-router'
 import { Row, Col }      from 'react-bootstrap'
 import Loader            from 'react-loader'
 import _                 from 'lodash'
+import moment            from 'moment'
 import Form              from 'components/admin/events/form'
 
 module.exports = React.createClass
@@ -20,9 +21,10 @@ module.exports = React.createClass
 
     {
       name: evt.name
-      date: evt.date
+      date: if evt.date then moment(evt.date) else moment()
       current: evt.current
       tag: evt.tag
+      loaded: store.loaded
       error: store.error
       updatedId: store.updatedId
     }
@@ -33,13 +35,13 @@ module.exports = React.createClass
   submit: (e) ->
     e.preventDefault()
 
-    @props.flux.actions.admin.event.update(
+    @props.flux.actions.admin.events.update(
       authToken: @props.flux.store('AuthStore').authToken
       id: @props.params.id
       data:
         event:
           name: @state.name
-          date: @state.date
+          date: @state.date.toISOString()
           is_current: @state.current
           tag: @state.tag
     )
@@ -55,7 +57,7 @@ module.exports = React.createClass
       <Row>
         <Col md={6} xs={12}>
           <h1>Edit Event</h1>
-          <Form name={@state.name} date={@state.date} current={@state.current} tag={@state.tag} set={@set} submit={@submit} submitText='Update Event' /> 
+          <Form name={@state.name} date={@state.date.format('YYYY-MM-DD')} current={@state.current} tag={@state.tag} set={@set} submit={@submit} submitText='Update Event' /> 
         </Col>
       </Row>
     </Loader>

@@ -25,23 +25,23 @@ module.exports =
     Client.post('/events', payload.authToken, payload.data, success, failure)
 
   update: (payload) ->
-    @dispatch(constants.ADMIN.EVENT.UPDATE)
+    @dispatch(constants.ADMIN.EVENTS.UPDATE)
 
     success = (response) =>
-      @dispatch(constants.ADMIN.EVENT.UPDATE_SUCCESS, response)
+      @dispatch(constants.ADMIN.EVENTS.UPDATE_SUCCESS, response)
 
     failure = (response) =>
-      @dispatch(constants.ADMIN.EVENT.UPDATE_FAILURE, response)
+      @dispatch(constants.ADMIN.EVENTS.UPDATE_FAILURE, response)
 
     Client.put("/events/#{payload.id}", payload.authToken, payload.data, success, failure)
 
   destroy: (payload) ->
-    @dispatch(constants.ADMIN.EVENT.DESTROY, payload.id)
+    @dispatch(constants.ADMIN.EVENTS.DESTROY, payload.id)
 
     success = (response) =>
-      @dispatch(constants.ADMIN.EVENT.DESTROY_SUCCESS, response)
+      @dispatch(constants.ADMIN.EVENTS.DESTROY_SUCCESS, response)
 
     failure = (response) =>
-      @dispatch(constants.ADMIN.EVENT.DESTROY_FAILURE, response)
+      @dispatch(constants.ADMIN.EVENTS.DESTROY_FAILURE, response)
 
     Client.delete("/events/#{payload.id}", payload.authToken, {}, success, failure)

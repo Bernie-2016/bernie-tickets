@@ -5,6 +5,7 @@ import { Table, Thead, Th, Tr, Td } from 'reactable'
 import Loader                       from 'react-loader'
 import $                            from 'jquery'
 import _                            from 'lodash'
+import moment                       from 'moment'
 import numeral                      from 'numeral'
 
 module.exports = React.createClass
@@ -75,7 +76,7 @@ module.exports = React.createClass
           <Tr key={evt.id}>
             {if campaign
               <Td column='date'>
-                {evt.date}
+                {moment(evt.date).format('MM/DD/YYYY') if evt.date}
               </Td>
             }
             <Td column='name'>

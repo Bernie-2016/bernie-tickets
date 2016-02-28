@@ -14,15 +14,15 @@ module.exports = Fluxxor.createStore
     @bindActions(constants.ADMIN.EVENTS.LOAD, @onLoadEvents)
     @bindActions(constants.ADMIN.EVENTS.LOAD_SUCCESS, @onLoadEventsSuccess)
     @bindActions(constants.ADMIN.EVENTS.LOAD_FAILURE, @onFailure)
-    # @bindActions(constants.ADMIN.EVENTS.CREATE, @onCreateForm)
-    # @bindActions(constants.ADMIN.EVENTS.CREATE_SUCCESS, @onCreateEventsuccess)
-    # @bindActions(constants.ADMIN.EVENTS.CREATE_FAILURE, @onFailure)
-    # @bindActions(constants.ADMIN.FORM.UPDATE, @onUpdateForm)
-    # @bindActions(constants.ADMIN.FORM.UPDATE_SUCCESS, @onUpdateEventsuccess)
-    # @bindActions(constants.ADMIN.FORM.UPDATE_FAILURE, @onFailure)
-    # @bindActions(constants.ADMIN.FORM.DESTROY, @onDestroyForm)
-    # @bindActions(constants.ADMIN.FORM.DESTROY_SUCCESS, @onDestroyEventsuccess)
-    # @bindActions(constants.ADMIN.FORM.DESTROY_FAILURE, @onFailure)
+    @bindActions(constants.ADMIN.EVENTS.CREATE, @onCreateEvent)
+    @bindActions(constants.ADMIN.EVENTS.CREATE_SUCCESS, @onCreateEventSuccess)
+    @bindActions(constants.ADMIN.EVENTS.CREATE_FAILURE, @onFailure)
+    @bindActions(constants.ADMIN.EVENTS.UPDATE, @onUpdateEvent)
+    @bindActions(constants.ADMIN.EVENTS.UPDATE_SUCCESS, @onUpdateEventSuccess)
+    @bindActions(constants.ADMIN.EVENTS.UPDATE_FAILURE, @onFailure)
+    @bindActions(constants.ADMIN.EVENTS.DESTROY, @onDestroyEvent)
+    @bindActions(constants.ADMIN.EVENTS.DESTROY_SUCCESS, @onDestroyEventSuccess)
+    @bindActions(constants.ADMIN.EVENTS.DESTROY_FAILURE, @onFailure)
 
   onFailure: (response) ->
     @error = true
@@ -37,34 +37,34 @@ module.exports = Fluxxor.createStore
     @loaded = true
     @emit('change')
 
-  # onCreateForm: ->
-  #   @loaded = false
-  #   @emit('change')
+  onCreateEvent: ->
+    @loaded = false
+    @emit('change')
 
-  # onCreateFormSuccess: (response) ->
-  #   @forms.push(response)
-  #   @loaded = true
-  #   @createdId = response.id
-  #   @emit('change')
-  #   @createdId = false
+  onCreateEventSuccess: (response) ->
+    @events.push(response)
+    @loaded = true
+    @createdId = response.id
+    @emit('change')
+    @createdId = false
 
-  # onUpdateForm: ->
-  #   @loaded = false
-  #   @emit('change')
+  onUpdateEvent: ->
+    @loaded = false
+    @emit('change')
 
-  # onUpdateFormSuccess: (response) ->
-  #   index = _.findIndex(@forms, id: response.id)
-  #   @forms.splice(index, 1, response)
-  #   @loaded = true
-  #   @updatedId = response.id
-  #   @emit('change')
-  #   @updatedId = false
+  onUpdateEventSuccess: (response) ->
+    index = _.findIndex(@events, id: response.id)
+    @events.splice(index, 1, response)
+    @loaded = true
+    @updatedId = response.id
+    @emit('change')
+    @updatedId = false
 
-  # onDestroyForm: (id) ->
-  #   @destroyedId = id
-  #   @emit('change')
+  onDestroyEvent: (id) ->
+    @destroyedId = id
+    @emit('change')
     
-  # onDestroyFormSuccess: ->
-  #   @forms = _.reject(@forms, id: @destroyedId)
-  #   @destroyedId = null
-  #   @emit('change')
+  onDestroyEventSuccess: ->
+    @events = _.reject(@events, id: @destroyedId)
+    @destroyedId = null
+    @emit('change')

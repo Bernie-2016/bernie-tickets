@@ -65,10 +65,11 @@ module.exports = React.createClass
       @setState(fieldValues: @state.fieldValues.concat(id: id, value: e.target.value))
 
   componentDidMount: ->
-    @props.flux.actions.admin.form.load(
-      slug: @props.params.slug
-      @props.flux.store('AuthStore').authToken
-    )
+    if @props.params.slug
+      @props.flux.actions.admin.form.load(
+        slug: @props.params.slug
+        @props.flux.store('AuthStore').authToken
+      )
     $('input').on 'blur', ->
       $(@).removeClass('invalid') unless $(@).is(':invalid')
 
