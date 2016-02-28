@@ -14,6 +14,7 @@ module.exports = React.createClass
     
     {
       loggedIn: store.loggedIn
+      logout: store.logout
     }
 
   signOut: ->
@@ -32,6 +33,7 @@ module.exports = React.createClass
 
   componentDidUpdate: ->
     @history.pushState(null, '/login') unless @state.loggedIn
+    setTimeout(@signOut) if @state.logout
 
   render: ->
     <div>

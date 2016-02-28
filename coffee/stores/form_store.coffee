@@ -27,6 +27,6 @@ module.exports = Fluxxor.createStore
       @loaded = true
     @emit('change')
 
-  onLoadFormFailure: ->
+  onLoadFormFailure: (response) ->
     @error = true
     @emit('change')

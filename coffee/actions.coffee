@@ -17,8 +17,8 @@ module.exports =
         success = (response) =>
           @dispatch(constants.ADMIN.FORMS.LOAD_SUCCESS, response)
 
-        failure = =>
-          @dispatch(constants.ADMIN.FORMS.LOAD_FAILURE)
+        failure = (response) =>
+          @dispatch(constants.ADMIN.FORMS.LOAD_FAILURE, response)
 
         Client.get('/forms', authToken, {}, success, failure)
 
@@ -29,8 +29,8 @@ module.exports =
         success = (response) =>
           @dispatch(constants.ADMIN.FORM.LOAD_SUCCESS, response)
 
-        failure = =>
-          @dispatch(constants.ADMIN.FORM.LOAD_FAILURE)
+        failure = (response) =>
+          @dispatch(constants.ADMIN.FORM.LOAD_FAILURE, response)
 
         Client.get("/forms/#{payload.slug}", payload.authToken, {}, success, failure)
 
@@ -40,8 +40,8 @@ module.exports =
         success = (response) =>
           @dispatch(constants.ADMIN.FORMS.CREATE_SUCCESS, response)
 
-        failure = =>
-          @dispatch(constants.ADMIN.FORMS.CREATE_FAILURE)
+        failure = (response) =>
+          @dispatch(constants.ADMIN.FORMS.CREATE_FAILURE, response)
 
         Client.post('/forms', payload.authToken, payload.data, success, failure)
 
@@ -51,8 +51,8 @@ module.exports =
         success = (response) =>
           @dispatch(constants.ADMIN.FORM.UPDATE_SUCCESS, response)
 
-        failure = =>
-          @dispatch(constants.ADMIN.FORM.UPDATE_FAILURE)
+        failure = (response) =>
+          @dispatch(constants.ADMIN.FORM.UPDATE_FAILURE, response)
 
         Client.put("/forms/#{payload.id}", payload.authToken, payload.data, success, failure)
 
@@ -62,7 +62,7 @@ module.exports =
         success = (response) =>
           @dispatch(constants.ADMIN.FORM.DESTROY_SUCCESS, response)
 
-        failure = =>
-          @dispatch(constants.ADMIN.FORM.DESTROY_FAILURE)
+        failure = (response) =>
+          @dispatch(constants.ADMIN.FORM.DESTROY_FAILURE, response)
 
         Client.delete("/forms/#{payload.id}", payload.authToken, {}, success, failure)

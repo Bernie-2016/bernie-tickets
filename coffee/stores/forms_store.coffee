@@ -24,7 +24,7 @@ module.exports = Fluxxor.createStore
     @bindActions(constants.ADMIN.FORM.DESTROY_SUCCESS, @onDestroyFormSuccess)
     @bindActions(constants.ADMIN.FORM.DESTROY_FAILURE, @onFailure)
 
-  onFailure: ->
+  onFailure: (response) ->
     @error = true
     @emit('change')
 

@@ -11,7 +11,7 @@ module.exports =
         'Authorization': "Bearer #{token}"
       data: data
       success: success
-      failure: failure
+      error: failure
 
   get: (path, token, data, success, failure=null) ->
     @request(path, 'GET', token, data, success, failure)
