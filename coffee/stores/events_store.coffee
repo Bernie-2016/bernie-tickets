@@ -1,6 +1,6 @@
 import Fluxxor   from 'fluxxor'
 import _         from 'lodash'
-import constants from 'constants'
+import constants from 'constants/all'
 
 module.exports = Fluxxor.createStore
   initialize: (options) ->

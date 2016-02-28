@@ -3,9 +3,9 @@ import React         from 'react'
 import { Router }    from 'react-router'
 import Fluxxor       from 'fluxxor'
 import createHistory from 'history/lib/createBrowserHistory'
-import actions       from 'actions'
+import actions       from 'actions/all'
 import routes        from 'routes'
-import stores        from 'stores'
+import stores        from 'stores/all'
 
 flux = new Fluxxor.Flux(stores, actions)
 
