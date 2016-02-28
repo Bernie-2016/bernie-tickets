@@ -20,7 +20,9 @@ module.exports = React.createClass
     }
 
   componentDidMount: ->
-    @props.flux.actions.admin.forms.load(@props.flux.store('AuthStore').authToken) unless @state.loaded
+    unless @state.loaded
+      setTimeout =>
+        @props.flux.actions.admin.forms.load(@props.flux.store('AuthStore').authToken) 
 
   deleteForm: (e) ->
     e.preventDefault()

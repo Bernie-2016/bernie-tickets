@@ -3,8 +3,14 @@ import constants from 'constants'
 
 module.exports =
   auth:
-    login: (accessToken) ->
-      @dispatch(constants.AUTH.LOGIN, accessToken: accessToken)
+    login: (authToken) ->
+      success = (response) =>
+        @dispatch(constants.AUTH.LOGIN_SUCCESS, response)
+
+      failure = (response) =>
+        @dispatch(constants.AUTH.LOGIN_FAILURE, response)
+
+      Client.get('/users/me', authToken, {}, success, failure)
 
     logout: ->
       @dispatch(constants.AUTH.LOGOUT)
@@ -66,3 +72,15 @@ module.exports =
           @dispatch(constants.ADMIN.FORM.DESTROY_FAILURE, response)
 
         Client.delete("/forms/#{payload.id}", payload.authToken, {}, success, failure)
+
+    events:
+      load: (authToken) ->
+        @dispatch(constants.ADMIN.EVENTS.LOAD)
+
+        success = (response) =>
+          @dispatch(constants.ADMIN.EVENTS.LOAD_SUCCESS, response)
+
+        failure = (response) =>
+          @dispatch(constants.ADMIN.EVENTS.LOAD_FAILURE, response)
+
+        Client.get('/events', authToken, {}, success, failure)

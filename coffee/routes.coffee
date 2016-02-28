@@ -9,6 +9,7 @@ import AdminForms    from 'components/admin/forms'
 import AdminForm     from 'components/admin/form'
 import AdminNewForm  from 'components/admin/newForm'
 import AdminEditForm from 'components/admin/editForm'
+import AdminEvents   from 'components/admin/events'
 
 module.exports = (
   <Route component={App}>
@@ -17,6 +18,8 @@ module.exports = (
       <Route path='/admin/forms/:id/edit' component={AdminEditForm} />
       <Route path='/admin/forms/:id' component={AdminForm} />
       <Route path='/admin/forms' component={AdminForms} />
+      <Route path='/admin/events/campaign' component={AdminEvents} />
+      <Route path='/admin/events/internal' component={AdminEvents} />
       <Route path='/admin' component={AdminForms} />
     </Route>
 

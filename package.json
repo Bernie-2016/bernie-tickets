@@ -39,6 +39,7 @@
     "mailcheck": "^1.1.1",
     "node-sass": "^3.4.2",
     "noty": "^2.3.8",
+    "numeral": "^1.5.3",
     "qrcode.react": "^0.6.0",
     "query-string": "^3.0.0",
     "random-id": "0.0.2",
