@@ -18,6 +18,7 @@ module.exports = React.createClass
     store = @props.flux.store('FormStore')
 
     {
+      id: store.id
       title: store.title
       fields: store.fields || []
       loaded: store.loaded
@@ -33,6 +34,7 @@ module.exports = React.createClass
       email: ''
       zip: ''
       canText: false
+      fieldValues: []
     }
 
   checkEmail: (e) ->
@@ -52,14 +54,32 @@ module.exports = React.createClass
   declineSuggestion: ->
     @setState(suggestion: {}, showSuggestion: false)
 
+  setField: (e) ->
+    id = $(e.target).data('id')
+    fieldIndex = _.findIndex(@state.fieldValues, id: parseInt(id))
+    if fieldIndex isnt -1
+      field = @state.fieldValues[fieldIndex]
+      field.value = e.target.value
+      @setState(fieldValues: @state.fieldValues.splice(fieldIndex, 1, field))
+    else
+      @setState(fieldValues: @state.fieldValues.concat(id: id, value: e.target.value))
+
   componentDidMount: ->
     @props.flux.actions.admin.form.load(
       slug: @props.params.slug
       @props.flux.store('AuthStore').authToken
     )
+    $('input').on 'blur', ->
+      $(@).removeClass('invalid') unless $(@).is(':invalid')
 
   submitForm: (e) ->
     e.preventDefault()
+
+    unless $('form').is(':valid')
+      alert 'Please complete all required fields.'
+      $('input').removeClass('invalid')
+      $('input:invalid').addClass('invalid')
+      return
 
     data =
       first_name: @state.firstName
@@ -68,6 +88,8 @@ module.exports = React.createClass
       email: @state.email
       zip: @state.zip
       canText: @state.canText
+      form_id: @state.id
+      extra_fields: @state.fieldValues
 
     # Stringify basic fields.
     allFields = [
@@ -77,10 +99,11 @@ module.exports = React.createClass
       'email'
       'zip'
       'canText'
+      'extra_fields'
     ]
     string = JSON.stringify(allFields.map( (key) -> data[key] )).slice(1, -1)
     canvas = $('canvas')[0]
-    @setState(view: 'TICKET', qrString: string, dataUrl: canvas.toDataUrl())
+    @setState(view: 'TICKET', qrString: string, dataUrl: canvas.toDataURL())
 
   onPrint: (e) ->
     e.preventDefault()
@@ -122,27 +145,27 @@ module.exports = React.createClass
             <MaskedInput name='zip' placeholder='Zip Code' type='tel' mask='11111' required={true} value={@state.zip} onChange={ (e) => @setState(zip: e.target.value) } />
 
             {for field in @state.fields when field.type is 'text'
-              <Input className='custom_field' key={field.id} type='text' placeholder={field.title} required={true} />
+              <Input key={field.id} type='text' placeholder={field.title} required={true}  data-id={field.id} onChange={@setField} value={(_.find(@state.fieldValues, id: parseInt(field.id)) || {}).value} />
             }
 
             <div className='checkboxgroup'>
               <Input type='checkbox' id='canText' onChange={ (e) => @setState(canText: $(e.target).is(':checked')) } />
               <label htmlFor='canText' className='checkbox-label'>
                 Receive text msgs from Bernie 2016
-                <span className='disclaimer'><br />Msg and data rates may apply</span>
+                <span className='disclaimer'><br />Mobile alerts from Bernie 2016. Periodic messages. Msg &amp; data rates may apply. <strong>Text STOP to 82623 to stop receiving messages. Text HELP to 82623 for more information.</strong> <a href='https://sync.revmsg.net/terms-and-conditions/4c4b9892-f8fc-4801-b7ea-710fa9225ad4' target='_blank'>Terms &amp; Conditions</a></span>
               </label>
             </div>
 
             {for field in @state.fields when field.type is 'checkbox'
               <div className='checkboxgroup' key={field.id}>
-                <Input type='checkbox' />
+                <Input type='checkbox' data-id={field.id} onChange={@setField} checked={(_.find(@state.fieldValues, id: parseInt(field.id)) || {}).value} />
                 <label className='checkbox-label'>
                   {field.title}
                 </label>
               </div>
             }
 
-            <a href='#' className='btn' onClick={@submitForm}>Sign Up</a>
+            <a href='#' className='btn block' onClick={@submitForm}>Sign Up</a>
           </form>
         }
       </section>
@@ -151,10 +174,10 @@ module.exports = React.createClass
         <h2>Bernie 2016</h2>
         <QRCode value={@state.qrString} size={300} fgColor='#147FD7' />
         <h2>Event Ticket</h2>
-        <a className='btn' onClick={@onPrint}>
+        <a className='btn block' onClick={@onPrint}>
           Print
         </a><br />
-        <a href={@state.dataUrl} id='save' download='ticket.png' className='btn'>
+        <a href={@state.dataUrl} className='btn block' download='ticket.png'>
           Save
         </a>
       </section>

@@ -48,7 +48,13 @@ a.btn {
   padding: 10px 20px;
   text-align: center;
 
-  &:not(:first-of-type) {
+  &.block {
+    display: block;
+    width: 300px;
+    margin: auto;
+  }
+
+  &:not(.block):not(:first-of-type) {
     margin-left: 15px;
   }
 
@@ -118,7 +124,6 @@ section.form {
     color: #333;
     box-sizing: border-box;
     width: 100%;
-    margin-bottom: 0.5rem;
     outline: 0px none;
     padding-left: 1em;
     font-size: 1.3em;
@@ -128,6 +133,10 @@ section.form {
     height: 42px;
     border-radius: 3px;
     border: 0px none;
+
+    &.invalid {
+      border: solid red 1px;
+    }
   }
 
   .checkboxgroup {
@@ -166,9 +175,13 @@ section.form {
       padding-bottom: 0.2em;
       display: block;
 
-      &.disclaimer {
-        font-size: 0.8em;
-        line-height: 0.8em;
+      span.disclaimer {
+        font-size: 0.7em;
+        line-height: 0.5em;
+
+        a {
+          color: white;
+        }
       }
     }
   }

@@ -3,6 +3,7 @@ import constants from 'constants'
 
 module.exports = Fluxxor.createStore
   initialize: (options) ->
+    @id = null
     @title = null
     @fields = []
     @loaded = false
@@ -20,6 +21,7 @@ module.exports = Fluxxor.createStore
     if response is null
       @error = true
     else
+      @id = response.id
       @title = response.title
       @fields = response.questions
       @loaded = true
